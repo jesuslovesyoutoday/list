@@ -32,108 +32,133 @@ void listDtor(struct List* list)
 
 void listInsert(struct List* list, int num, int element)
 {
-	enum LIST_STATUS status = listVerify(list);
-	if (status == LIST_IS_OK)
+	int place = list->free - list->next;
+	if(num <= list->el_amount && list->el_amount < list->capacity)
 	{
-		int place = list->free - list->next;
-		if(num <= list->el_amount && list->el_amount < list->capacity)
+		list->data[place] = element;
+		int temp = *(list->free);
+		if (num == 0)
 		{
-			list->data[place] = element;
-			int temp = *(list->free);
-			if (num == 0)
+			if (list->el_amount == 0)
 			{
-				if (list->el_amount == 0)
-				{
-					list->tail = list->data + place;
-					*(list->free) = 0;
-				}
-				else
-				{
-					int next = list->head - list->data;
-					*(list->free) = next;
-					list->prev[next] = place;
-				}
-				list->head = list->data + place;
-				list->free += temp - place;
-				list->prev[place] = 0;
-			}
-			else if (num == list->el_amount)
-			{
-				*(list->free) = 0;
-				int prev = list->tail - list->data;
-				list->prev[place] = prev;
-				list->next[prev] = place;
 				list->tail = list->data + place;
-				list->free += temp - place;
+				*(list->free) = 0;
 			}
 			else
 			{
-				int prev = num;
-				int next = list->next[prev];
+				int next = list->head - list->data;
 				*(list->free) = next;
-				list->free += temp - place;
-				list->prev[place] = prev;
-				list->next[prev]  = place;
-				list->prev[next]  = place;  
+				list->prev[next] = place;
 			}
-			list->el_amount ++;
-			
+			list->head = list->data + place;
+			list->free += temp - place;
+			list->prev[place] = 0;
 		}
-		else if (list->el_amount >= list->capacity)
+		else if (num == list->el_amount)
 		{
-			printf("Buffer is over, need reallocation first\n");
+			*(list->free) = 0;
+			int prev = list->tail - list->data;
+			list->prev[place] = prev;
+			list->next[prev] = place;
+			list->tail = list->data + place;
+			list->free += temp - place;
 		}
 		else
 		{
-			printf("Your list is smaller than %d, cannot put element %d\n", num, element);
+			int prev = num;
+			int next = list->next[prev];
+			*(list->free) = next;
+			list->free += temp - place;
+			list->prev[place] = prev;
+			list->next[prev]  = place;
+			list->prev[next]  = place;  	
 		}
+		list->el_amount ++;
+	}
+	else if (list->el_amount >= list->capacity)
+	{
+		printf("Buffer is over, need reallocation first\n");
 	}
 	else
 	{
-		printf("ERROR %d\n occured while inserting element %d on the place after %dth\n", status, element, num);
+		printf("Your list is smaller than %d, cannot put element %d\n", num, element);
+	}
+	
+	enum LIST_STATUS status = listVerify(list);
+	if (status != LIST_IS_OK)
+	{
+		printf("ERROR %d occured while inserting element %d on the place after %dth\n", status, element, num);
 	}
 }
 
 void listDelete(struct List* list, int num)
 {
-	enum LIST_STATUS status = listVerify(list);
-	if (status == LIST_IS_OK)
+	if (list->data + num + 1 == list->head)
 	{
-		if (list->data + num + 1 == list->head)
-		{
-			*(list->head)     = 0;
-			int place         = list->head - list->data;
-			int temp          = list->next[place];
-			list->next[place] = list->free - list->next;
-			list->prev[place] = -1;
-			list->free        = list->next + place;
-			list->head        = list->data + temp;
-			list->prev[temp]  = 0;
-		}
-		else if (list->data + num + 1 == list->tail)
-		{
-			*(list->tail) = 0;
-			int place         = list->tail - list->data;
-			int temp          = list->prev[place];
-			list->prev[place] = -1;
-			list->next[place] = list->free - list->next;
-			list->free = list->next + place;
-			list->tail = list->data + temp;
-			list->next[temp]  = 0; 
-		}
-		else
-		{
-			list->data[num + 1] = 0;
-			list->next[list->prev[num + 1]] = list->next[num + 1];
-			list->prev[list->next[num + 1]] = list->prev[num + 1];
-			list->next[num + 1]             = list->free - list->next;
-			list->free                      = list->next + num + 1;
-			list->prev[num + 1]             = -1; 
-		}
+	*(list->head)     = 0;
+	int place         = list->head - list->data;
+	int temp          = list->next[place];
+	list->next[place] = list->free - list->next;
+	list->prev[place] = -1;
+	list->free        = list->next + place;
+	list->head        = list->data + temp;
+	list->prev[temp]  = 0;
+	}
+	else if (list->data + num + 1 == list->tail)
+	{
+		*(list->tail) = 0;
+		int place         = list->tail - list->data;
+		int temp          = list->prev[place];
+		list->prev[place] = -1;
+		list->next[place] = list->free - list->next;
+		list->free = list->next + place;
+		list->tail = list->data + temp;
+		list->next[temp]  = 0; 
 	}
 	else
 	{
-		printf("ERROR %d\n occured while deleting element on the place after %dth\n", status, num);
+		list->data[num + 1] = 0;
+		list->next[list->prev[num + 1]] = list->next[num + 1];
+		list->prev[list->next[num + 1]] = list->prev[num + 1];
+		list->next[num + 1]             = list->free - list->next;
+		list->free                      = list->next + num + 1;
+		list->prev[num + 1]             = -1; 
+	}
+	enum LIST_STATUS status = listVerify(list);
+	if (status != LIST_IS_OK)
+	{
+		printf("ERROR %d occured while deleting element on the place after %dth\n", status, num);
+	}
+}
+
+void listResize(struct List* list, int new_capacity)
+{
+	int head_place = list->head - list->data;
+	int tail_place = list->tail - list->data;
+	int free_place = list->free - list->next;
+	
+	list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
+	list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
+	list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
+	list->head = list->data + head_place;
+	list->tail = list->data + tail_place;
+	list->free = list->next + free_place;
+	
+	list->next[list->capacity + 1] = free_place;
+	for (int i = list->capacity + 1; i <= new_capacity; i++)
+	{
+		list->data[i]     = 0;
+		list->prev[i]     = -1;
+		list->next[i]     = i + 1;
+	}	
+	list->next[new_capacity] = 0;
+	
+	list->capacity = new_capacity;
+	
+	enum LIST_STATUS status = listVerify(list);
+	if (status != LIST_IS_OK)
+	{
+		printf("ERROR %d occured while resizing list", status);
 	}
 }
 
@@ -143,7 +168,7 @@ enum LIST_STATUS listVerify(struct List* list)
 	if (list->prev[place] != 0)
 		return FIRST_EL_ERROR;
 		
-	for (int i = 0; i < list->el_amount; i ++)
+	for (int i = 1; i < list->el_amount; i ++)
 	{
 		if (list->data[place] != 0)
 		{

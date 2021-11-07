@@ -36,5 +36,8 @@ int main()
 	listDelete(&list, 4);
 	listPrint(&list);
 	
+	listResize(&list, 20);
+	listPrint(&list);
+	
     listDtor(&list);
 }
