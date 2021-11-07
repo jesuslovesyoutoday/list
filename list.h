@@ -2,16 +2,16 @@
 #define LIST_H
 
 struct List {
-	int* data;     // pointer to the beginning of the buffer
-    int* head;     // pointer to the first element of list
-    int* tail;     // pointer to the last element of list
-    int* next;     // pointer to the array storing the
-    		       // next physical number for each element
-    int* prev;     // pointer to the array storing the 
-    		       // previous physical number
-    int* free;     // pointer to the "list" of free elements
-    int capacity;  // size of buffer
-    int el_amount; // amount of elements in list
+    int* data;     //< pointer to the beginning of the buffer
+    int* head;     //< pointer to the first element of list
+    int* tail;     //< pointer to the last element of list
+    int* next;     //< pointer to the array storing the
+                   //  next physical number for each element
+    int* prev;     //< pointer to the array storing the 
+                   //  previous physical number
+    int* free;     //< pointer to the "list" of free elements
+    int capacity;  //< size of buffer
+    int el_amount; //< amount of elements in list
 };
 
 enum LIST_STATUS {
