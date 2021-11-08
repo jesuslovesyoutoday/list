@@ -95,4 +95,6 @@ void listResize(struct List* list, int new_capacity);
 
 enum LIST_STATUS listVerify(struct List* list);
 
+void listDump(struct List* list);
+
 #endif // LIST_H

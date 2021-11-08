@@ -38,6 +38,6 @@ int main()
 	
 	listResize(&list, 20);
 	listPrint(&list);
-	
+	listDump(&list);
     listDtor(&list);
 }

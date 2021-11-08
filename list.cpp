@@ -1,5 +1,5 @@
 #include "list.h"
-#include <stdio.h>
+#include <cstdio>
 #include <cstdlib>
 
 void listCtor(struct List* list, int size)
@@ -190,4 +190,34 @@ enum LIST_STATUS listVerify(struct List* list)
 		place ++;
 	}
 	return LIST_IS_OK;
+}
+
+void listDump(struct List* list)
+{
+	FILE* fin = fopen("list.txt", "w");
+    setbuf(fin, NULL);
+	fprintf(fin, "digraph list{\n");
+	fprintf(fin, "	rankdir = TB\n");
+	for (int i = 1; i <= list->capacity; i+=2)
+	{	
+		fprintf(fin, "	%d [shape = \"rectangle\", style = \"rounded\", label =\" %d | %d | %d\"]\n", 
+					     i - 1, list->data[i-1], list->next[i-1], list->prev[i-1]);
+		fprintf(fin, "	%d [shape = \"rectangle\", style = \"rounded\", label =\" %d | %d | %d\"]\n", 
+		                 i, list->data[i], list->next[i], list->prev[i]);
+	}
+	if (list->capacity % 2 == 0)
+	{
+		fprintf(fin, "	%d [shape = \"rectangle\", style = \"rounded\", label =\" %d | %d | %d\"]\n", 
+			             list->capacity, list->data[list->capacity], list->next[list->capacity], list->prev[list->capacity]);
+	}
+	int i = 0;
+	fprintf(fin, "	%d -> ", i);
+	for (int i = 1; i < list->capacity; i++)
+	{
+		fprintf(fin, "%d -> ", i);
+	}
+	fprintf(fin, "%d\n", list->capacity);
+	fprintf(fin, "}");
+	fflush(fin);
+	fclose(fin);
 }
