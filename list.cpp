@@ -83,12 +83,13 @@ void listInsert(struct List* list, int num, int element)
 	{
 		printf("Your list is smaller than %d, cannot put element %d\n", num, element);
 	}
-	
-	enum LIST_STATUS status = listVerify(list);
-	if (status != LIST_IS_OK)
-	{
-		printf("ERROR %d occured while inserting element %d on the place after %dth\n", status, element, num);
-	}
+	#ifdef DEBUG
+		enum LIST_STATUS status = listVerify(list);
+		if (status != LIST_IS_OK)
+		{
+			printf("ERROR %d occured while inserting element %d on the place after %dth\n", status, element, num);
+		}
+	#endif
 }
 
 void listDelete(struct List* list, int num)
@@ -125,11 +126,13 @@ void listDelete(struct List* list, int num)
 		list->prev[num + 1]             = -1; 
 	}
 	list->el_amount--;
-	enum LIST_STATUS status = listVerify(list);
-	if (status != LIST_IS_OK)
-	{
-		printf("ERROR %d occured while deleting element on the place after %dth\n", status, num);
-	}
+	#ifdef DEBUG
+		enum LIST_STATUS status = listVerify(list);
+		if (status != LIST_IS_OK)
+		{
+			printf("ERROR %d occured while deleting element on the place after %dth\n", status, num);
+		}
+	#endif
 }
 
 void listResize(struct List* list, int new_capacity)
@@ -177,12 +180,13 @@ void listResize(struct List* list, int new_capacity)
 			puts("Invalid resize");
 	}
 	list->capacity = new_capacity;
-	
-	enum LIST_STATUS status = listVerify(list);
-	if (status != LIST_IS_OK)
-	{
-		printf("ERROR %d occured while resizing list", status);
-	}
+	#ifdef DEBUG
+		enum LIST_STATUS status = listVerify(list);
+		if (status != LIST_IS_OK)
+		{
+			printf("ERROR %d occured while resizing list", status);
+		}
+	#endif
 }
 
 enum LIST_STATUS listVerify(struct List* list)

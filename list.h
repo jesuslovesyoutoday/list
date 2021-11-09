@@ -1,5 +1,6 @@
 #ifndef LIST_H
 #define LIST_H
+#define DEBUG
 
 struct List {
     int* data;     //< pointer to the beginning of the buffer
