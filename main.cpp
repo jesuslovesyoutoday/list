@@ -1,4 +1,5 @@
 #include "list.h"
+#include "unit_test.h"
 #include <stdio.h>
 
 void listPrint(struct List* list)
@@ -14,7 +15,8 @@ void listPrint(struct List* list)
 
 int main()
 {
-    struct List list;
+	unitTest();
+    /*struct List list;
     listCtor(&list, 10);
     listInsert(&list, 0, 10);
     listInsert(&list, 1, 20);
@@ -26,6 +28,9 @@ int main()
     listInsert(&list, 7, 80);
     listInsert(&list, 4, 45);
  	
+ 	listResize(&list, 20);
+ 	listResize(&list, 10);
+ 	listDtor(&list);
  	listPrint(&list);
 	listDelete(&list, 0);
 
@@ -39,5 +44,5 @@ int main()
 	listResize(&list, 20);
 	listPrint(&list);
 	listDump(&list);
-    listDtor(&list);
+    listDtor(&list);*/
 }

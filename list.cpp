@@ -124,6 +124,7 @@ void listDelete(struct List* list, int num)
 		list->free                      = list->next + num + 1;
 		list->prev[num + 1]             = -1; 
 	}
+	list->el_amount--;
 	enum LIST_STATUS status = listVerify(list);
 	if (status != LIST_IS_OK)
 	{
@@ -137,22 +138,44 @@ void listResize(struct List* list, int new_capacity)
 	int tail_place = list->tail - list->data;
 	int free_place = list->free - list->next;
 	
-	list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
-	list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
-	list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
-	list->head = list->data + head_place;
-	list->tail = list->data + tail_place;
-	list->free = list->next + free_place;
-	
-	list->next[list->capacity + 1] = free_place;
-	for (int i = list->capacity + 1; i <= new_capacity; i++)
+	if (new_capacity > list->capacity)
 	{
-		list->data[i]     = 0;
-		list->prev[i]     = -1;
-		list->next[i]     = i + 1;
-	}	
-	list->next[new_capacity] = 0;
-	
+		list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
+		list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
+		list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
+		list->head = list->data + head_place;
+		list->tail = list->data + tail_place;
+		list->free = list->next + free_place;
+		
+		list->next[list->capacity + 1] = free_place;
+		for (int i = list->capacity + 1; i <= new_capacity; i++)
+		{
+			list->data[i]     = 0;
+			list->prev[i]     = -1;
+			list->next[i]     = i + 1;
+		}	
+		list->next[new_capacity] = 0;
+	}
+	else if (new_capacity < list->capacity)
+	{
+		int i = 0;
+		for (i = 0; i < list->capacity; i++)
+		{
+			if (list->data[i] == 0)
+				break;
+		}
+		if (new_capacity >= i)
+		{
+			list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
+			list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
+			list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
+			list->head = list->data + head_place;
+			list->tail = list->data + tail_place;
+			list->free = list->next + free_place;
+		}
+		else
+			puts("Invalid resize");
+	}
 	list->capacity = new_capacity;
 	
 	enum LIST_STATUS status = listVerify(list);
