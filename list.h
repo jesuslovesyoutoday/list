@@ -77,7 +77,18 @@ void listDelete(struct List* list, int num);
 
 //-------------------------------------------
 //!
-//! Alloc more memory and move the list
+//! Deletes free elements in the list and 
+//! makes it continuous
+//!
+//! @param[out] list - pointer to list
+//!
+//-------------------------------------------
+
+void listCompact(struct List* list);
+
+//-------------------------------------------
+//!
+//! Allocs more memory and moves the list
 //!
 //! @param[out] list - pointer to list
 //! @param[in] new_capacity - new capacity :^)
@@ -90,11 +101,20 @@ void listResize(struct List* list, int new_capacity);
 //!
 //! Check list for errors
 //!
-//! @param[out] list - poinetr to list
+//! @param[out] list - pointer to list
 //!
 //-------------------------------------------
 
 enum LIST_STATUS listVerify(struct List* list);
+
+//-------------------------------------------
+//!
+//! Prepares txt file for graphviz with
+//! information about list to print it
+//!
+//! @param[out] list -  pointer ro list
+//!
+//------------------------------------------
 
 void listDump(struct List* list);
 
