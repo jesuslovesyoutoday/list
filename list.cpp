@@ -5,11 +5,11 @@
 void listCtor(struct List* list, int size)
 {
     list->capacity = size;
-    list->data     = (int*)calloc(size + 1, sizeof(int));
+    list->data     = (int*)calloc((size + 1)*3, sizeof(int));
     list->head     = list->data;
     list->tail     = list->data;
-    list->next     = (int*)calloc(size + 1, sizeof(int));
-    list->prev     = (int*)calloc(size + 1, sizeof(int));
+    list->next     = list->data + size + 1;
+    list->prev     = list->next + size + 1;
     list->free     = list->next + 1;
     for (int i = 1; i < size; i++)
     {
@@ -25,8 +25,6 @@ void listCtor(struct List* list, int size)
 void listDtor(struct List* list)
 {
     free(list->data);
-    free(list->next);
-    free(list->prev);
     list->capacity = 0;
 }
 
@@ -140,12 +138,22 @@ void listResize(struct List* list, int new_capacity)
 	int head_place = list->head - list->data;
 	int tail_place = list->tail - list->data;
 	int free_place = list->free - list->next;
+	int* tmp       = list->data;
 	
-	if (new_capacity > list->capacity)
+	 /*if (new_capacity > list->capacity)
 	{
-		list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
-		list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
-		list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
+		int* temp = list->data;
+		list->data = (int*)realloc(list->data, 3 * (new_capacity + 1) * sizeof(int));
+		for (int i = new_capacity + 1; i <= (new_capacity + 1)*2; i++)
+		{
+			list->data[i] = list->next[i];
+		}
+		for (int i = 2 * (new_capacity + 1); i <= (new_capacity + 1)*3; i++)
+		{
+			list->data[i] = list->prev[i];
+		}
+		list->next = list->data + new_capacity + 1;
+		list->prev = list->next + new_capacity + 1;
 		list->head = list->data + head_place;
 		list->tail = list->data + tail_place;
 		list->free = list->next + free_place;
@@ -169,22 +177,89 @@ void listResize(struct List* list, int new_capacity)
 		}
 		if (new_capacity >= i)
 		{
-			list->data = (int*)realloc(list->data, (new_capacity + 1) * sizeof(int));
-			list->next = (int*)realloc(list->next, (new_capacity + 1) * sizeof(int));
-			list->prev = (int*)realloc(list->prev, (new_capacity + 1) * sizeof(int));
-			list->head = list->data + head_place;
-			list->tail = list->data + tail_place;
-			list->free = list->next + free_place;
+			list->data = (int*)realloc(list->data, 3 * (new_capacity + 1) * sizeof(int));
+		list->next = list->data + new_capacity + 1;
+		list->prev = list->next + new_capacity + 1;
+		list->head = list->data + head_place;
+		list->tail = list->data + tail_place;
+		list->free = list->next + free_place;
 		}
 		else
 			puts("Invalid resize");
+	}*/
+	if (new_capacity > list->capacity)
+	{
+		list->data = (int*)calloc((new_capacity + 1) * 3, sizeof(int));
+		for (int i = 0; i <= list->capacity; i++)
+		{
+			list->data[i] = tmp[i];
+		}
+		for (int i = list->capacity + 1; i <= new_capacity; i++)
+		{
+			list->data[i] = 0;
+		}
+		for (int i = 0; i < list->capacity; i++)
+		{
+			list->data[i + new_capacity + 1] = tmp[i + list->capacity + 1];
+		}
+		for (int i = list->capacity; i < new_capacity; i++)
+		{
+			list->data[i + new_capacity + 1] = i + 1;
+		}
+		list->data[new_capacity] = 0;
+		for (int i = 0; i <= list->capacity; i++)
+		{
+			list->data[i + 2*(new_capacity + 1)] = tmp[i + 2*(list->capacity + 1)];
+		}
+		for (int i = list->capacity + 1; i <= new_capacity; i++)
+		{
+			list->data[i + 2*(new_capacity)] = -1;
+		}
 	}
+	else if (new_capacity < list->capacity && new_capacity >= list->el_amount)
+	{
+		//listCompact(&list);
+		list->data = (int*)calloc((new_capacity + 1) * 3, sizeof(int));
+		int frees = new_capacity - list->el_amount;
+		int i = 0;
+		for (i = 0; i <= list->el_amount; i++)
+		{
+			list->data[i] = tmp[i];
+		}
+		for (i = 0; i < frees; i++)
+		{
+			list->data[i + list->el_amount + 1] = 0;
+		}
+		for (i = 0; i <= list->el_amount; i++)
+		{
+			list->data[i + new_capacity + 1] = list->next[i];
+		}
+		for (i = 0; i <= frees - 1; i++)
+		{
+			list->data[i + 2 + list->el_amount + new_capacity] = list->el_amount + i + 2;
+		}
+		list->data[frees + list->el_amount + new_capacity + 1] = 0;
+		for (i = 0; i <= list->el_amount; i++)
+		{
+			list->data[i + 2 * (new_capacity + 1)] = list->prev[i];
+		}
+		for (i = 0; i < frees; i++)
+		{
+			list->data[i + 2 * (new_capacity + 1) + list->el_amount + 1] = -1;
+		}
+	}
+	list->next = list->data + new_capacity + 1;
+	list->prev = list->next + new_capacity + 1;
+	list->head = list->data + head_place;
+	list->tail = list->data + tail_place;
+	list->free = list->next + free_place;
+	free(tmp);
 	list->capacity = new_capacity;
 	#ifdef DEBUG
 		enum LIST_STATUS status = listVerify(list);
 		if (status != LIST_IS_OK)
 		{
-			printf("ERROR %d occured while resizing list", status);
+			printf("ERROR %d occured while resizing list\n", status);
 		}
 	#endif
 }
@@ -193,7 +268,10 @@ enum LIST_STATUS listVerify(struct List* list)
 {
 	int place = list->head - list->data;
 	if (list->prev[place] != 0)
+	{
+		listDump(list);
 		return FIRST_EL_ERROR;
+	}
 		
 	for (int i = 1; i < list->el_amount; i ++)
 	{
