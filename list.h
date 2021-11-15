@@ -14,8 +14,8 @@ struct List {
 	int capacity;             //< size of list buffer
 	int el_amount;            //< amount of element
 	listElement* head;        //< pointer to the first element of list
-        listElement* tail;        //< pointer to the last element of list
-        listElement* free;        //< pointer to the "list" of free elements
+    listElement* tail;        //< pointer to the last element of list
+    listElement* free;        //< pointer to the "list" of free elements
 };
 
 enum LIST_STATUS {
@@ -91,6 +91,19 @@ void listCompact(struct List* list);
 
 //-------------------------------------------
 //!
+//! Returns physical number of element in the
+//! list by it's logical number
+//!
+//! @param[in] list - pointer to list
+//! @param[in] log  - logical number
+//! @return physical number
+//!
+//-------------------------------------------
+
+int listPhyByLog(struct List* list, int log);
+
+//-------------------------------------------
+//!
 //! Allocs more memory and moves the list
 //!
 //! @param[out] list - pointer to list
@@ -105,6 +118,7 @@ void listResize(struct List* list, int new_capacity);
 //! Check list for errors
 //!
 //! @param[out] list - pointer to list
+//! @return number of error
 //!
 //-------------------------------------------
 
@@ -116,7 +130,7 @@ enum LIST_STATUS listVerify(struct List* list);
 //! information about list to print it
 //!
 //! @param[out] list -  pointer ro list
-//!
+//! 
 //------------------------------------------
 
 void listDump(struct List* list);

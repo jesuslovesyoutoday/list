@@ -21,6 +21,9 @@ static int listCmp(struct List* list1, struct List* list2)
 
 void unitTest()
 {
+
+//-----------------------INIT--------------------------//
+
 	struct List list1;
 	listCtor(&list1, 15);
 	
@@ -32,6 +35,8 @@ void unitTest()
 		listInsert(&list1, i-1, i);
 		listInsert(&list2, i-1, i);
 	}
+	
+//------------------DELETE-INSERT---------------------//	
 	
 	listDelete(&list2, 5);
 	listInsert(&list2, 5, list1.data[6].element);
@@ -54,6 +59,8 @@ void unitTest()
 		puts("=========================");
 		listDump(&list2);
 	}
+
+//----------------------RESIZE-------------------------//
 	
 	listResize(&list2, 20);
 	listResize(&list2, 15);
@@ -71,6 +78,25 @@ void unitTest()
 		puts("=========================");
 		listDump(&list2);
 	}
+	
+//-------------------PHY_BY_LOG-----------------------//
+
+	listDelete(&list2, 5);
+	if (listPhyByLog(&list2, 6) == 7)
+	{
+		puts("=========================");	
+		puts(" Phy_by_log test passed");
+		puts("=========================");
+	}
+	else
+	{
+		puts("=========================");	
+		puts(" Phy_by_log test failed");
+		puts("=========================");
+	}
+	
+//-----------------------DTORS------------------------//	
+	
 	listDtor(&list1);
 	listDtor(&list2);
 	

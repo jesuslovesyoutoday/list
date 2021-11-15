@@ -1,4 +1,4 @@
-#include "list2.h"
+#include "list.h"
 #include <cstdio>
 #include <cstdlib>
 
@@ -217,6 +217,23 @@ void listCompact(struct List* list)
 		list->free = NULL;
 		list->capacity = list->el_amount;
 	}
+	#ifdef DEBUG
+		enum LIST_STATUS status = listVerify(list);
+		if (status != LIST_IS_OK)
+		{
+			printf("ERROR %d occured while compacting list\n", status);
+		}
+	#endif
+}
+
+int listPhyByLog(struct List* list, int log)
+{
+	int tmp = 0;
+	for (int i = 1; i < log; i++)
+	{
+		tmp = list->data[i].next;
+	}
+	return tmp;
 }
 
 enum LIST_STATUS listVerify(struct List* list)
