@@ -14,8 +14,8 @@ struct List {
 	int capacity;             //< size of list buffer
 	int el_amount;            //< amount of element
 	listElement* head;        //< pointer to the first element of list
-    listElement* tail;        //< pointer to the last element of list
-    listElement* free;        //< pointer to the "list" of free elements
+    listElement* tail;            //< pointer to the last element of list
+    listElement* free;            //< pointer to the "list" of free elements
 };
 
 enum LIST_STATUS {
