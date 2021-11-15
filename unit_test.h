@@ -6,12 +6,14 @@
 
 static int listCmp(struct List* list1, struct List* list2)
 {
-	if(list1->capacity != list2->capacity || list1->el_amount != list2->el_amount)
+	if(list1->capacity != list2->capacity || 
+	   list1->el_amount != list2->el_amount)
 		return 1;
 	for (int i = 0; i <= list1->capacity; i++)
 	{
-		if (list1->data[i] != list2->data[i] || list1->next[i] != list2->next[i] || 
-		    list1->prev[i] != list2->prev[i])
+		if (list1->data[i].element != list2->data[i].element || 
+		    list1->data[i].next != list2->data[i].next || 
+		    list1->data[i].prev != list2->data[i].prev)
 		    return 1;
 	}
 	return 0; 
@@ -32,11 +34,12 @@ void unitTest()
 	}
 	
 	listDelete(&list2, 5);
-	listInsert(&list2, 5, list1.data[6]);
+	listInsert(&list2, 5, list1.data[6].element);
 	listDelete(&list2, 0);
-	listInsert(&list2, 0, list1.data[1]);
+	listInsert(&list2, 0, list1.data[1].element);
 	listDelete(&list2, list2.el_amount - 1);
-	listInsert(&list2, list2.el_amount, list1.data[list1.el_amount]);
+	listInsert(&list2, list2.el_amount, 
+	           list1.data[list1.el_amount].element);
 	
 	if (listCmp(&list1, &list2) == 0)
 	{
@@ -47,7 +50,7 @@ void unitTest()
 	else
 	{
 		puts("=========================");	
-		puts("      Test failed");
+		puts("Delete-insert test failed");
 		puts("=========================");
 		listDump(&list2);
 	}
@@ -64,7 +67,7 @@ void unitTest()
 	else
 	{
 		puts("=========================");	
-		puts("      Test failed");
+		puts("   Resize test failed");
 		puts("=========================");
 		listDump(&list2);
 	}

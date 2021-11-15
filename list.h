@@ -1,18 +1,21 @@
 #ifndef LIST_H
 #define LIST_H
+
 #define DEBUG
 
+struct listElement {
+	int element;              //< element of list
+	int next;                 //< element after this
+	int prev;                 //< element before this
+};
+
 struct List {
-    int* data;     //< pointer to the beginning of the buffer
-    int* head;     //< pointer to the first element of list
-    int* tail;     //< pointer to the last element of list
-    int* next;     //< pointer to the array storing the
-                   //  next physical number for each element
-    int* prev;     //< pointer to the array storing the 
-                   //  previous physical number
-    int* free;     //< pointer to the "list" of free elements
-    int capacity;  //< size of buffer
-    int el_amount; //< amount of elements in list
+	struct listElement* data; //< pointer to the struct array
+	int capacity;             //< size of list buffer
+	int el_amount;            //< amount of element
+	listElement* head;        //< pointer to the first element of list
+    listElement* tail;        //< pointer to the last element of list
+    listElement* free;        //< pointer to the "list" of free elements
 };
 
 enum LIST_STATUS {
@@ -119,3 +122,5 @@ enum LIST_STATUS listVerify(struct List* list);
 void listDump(struct List* list);
 
 #endif // LIST_H
+
+
