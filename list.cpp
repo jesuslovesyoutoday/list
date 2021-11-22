@@ -1,6 +1,7 @@
 #include "list.h"
 #include <cstdio>
 #include <cstdlib>
+#include <assert.h>
 
 void listCtor(struct List* list, int size)
 {
@@ -27,6 +28,7 @@ void listCtor(struct List* list, int size)
 
 void listDtor(struct List* list)
 {
+	assert(list);
     free(list->data);
     list->capacity = 0;
     list->head = NULL;
@@ -37,55 +39,60 @@ void listDtor(struct List* list)
 void listInsert(struct List* list, int num, int element)
 {
 	int place = list->free - list->data;
-	if(num <= list->el_amount && list->el_amount < list->capacity)
+	if (list->data[num].prev == -1)
+		puts("Invalid insert after free element");
+	else
 	{
-		list->data[place].element = element;
-		struct listElement temp = *(list->free);
-		if (num == 0)
+		if (num <= list->el_amount && list->el_amount < list->capacity)
 		{
-			if (list->el_amount == 0)
+			list->data[place].element = element;
+			struct listElement temp = *(list->free);
+			if (num == 0)
 			{
-				list->tail = list->data + place;
+				if (list->el_amount == 0)
+				{
+					list->tail = list->data + place;
+					list->free->next = 0;
+				}
+				else
+				{
+					int next = list->head - list->data;
+					list->free->next = next;
+					list->data[next].prev = place;
+				}
+				list->head = list->data + place;
+				list->free += temp.next - place;
+				list->data[place].prev = 0;
+			}
+			else if (num == list->el_amount)
+			{
 				list->free->next = 0;
+				int prev = list->tail - list->data;
+				list->data[place].prev = prev;
+				list->data[prev].next = place;
+				list->tail = list->data + place;
+				list->free += temp.next - place;
 			}
 			else
 			{
-				int next = list->head - list->data;
+				int prev = num;
+				int next = list->data[prev].next;
 				list->free->next = next;
-				list->data[next].prev = place;
+				list->free += temp.next - place;
+				list->data[place].prev = prev;
+				list->data[prev].next  = place;
+				list->data[next].prev  = place;  	
 			}
-			list->head = list->data + place;
-			list->free += temp.next - place;
-			list->data[place].prev = 0;
+			list->el_amount ++;
 		}
-		else if (num == list->el_amount)
+		else if (list->el_amount >= list->capacity)
 		{
-			list->free->next = 0;
-			int prev = list->tail - list->data;
-			list->data[place].prev = prev;
-			list->data[prev].next = place;
-			list->tail = list->data + place;
-			list->free += temp.next - place;
+			printf("Buffer is over, need reallocation first\n");
 		}
 		else
 		{
-			int prev = num;
-			int next = list->data[prev].next;
-			list->free->next = next;
-			list->free += temp.next - place;
-			list->data[place].prev = prev;
-			list->data[prev].next  = place;
-			list->data[next].prev  = place;  	
+			printf("Your list is smaller than %d, cannot put element %d\n", num, element);
 		}
-		list->el_amount ++;
-	}
-	else if (list->el_amount >= list->capacity)
-	{
-		printf("Buffer is over, need reallocation first\n");
-	}
-	else
-	{
-		printf("Your list is smaller than %d, cannot put element %d\n", num, element);
 	}
 	#ifdef DEBUG
 		enum LIST_STATUS status = listVerify(list);
@@ -234,6 +241,36 @@ int listPhyByLog(struct List* list, int log)
 		tmp = list->data[i].next;
 	}
 	return tmp;
+}
+
+void listLinearize(struct List* list)
+{
+	struct listElement* tmp = list->data;
+	list->data = (struct listElement*)calloc(list->capacity + 1, 
+	       sizeof(struct listElement));
+	struct listElement* ptr = list->head;
+	list->data[0].element = 0;
+	list->data[0].next    = 0;
+	list->data[0].prev    = 0; 
+	for (int i = 1; i <= list->el_amount; i++)
+	{
+		list->data[i].element = ptr->element;
+		list->data[i].next    = i + 1;
+		list->data[i].prev    = i - 1; 
+		ptr = tmp + ptr->next;
+	}
+	list->data[list->el_amount].next = 0;
+	for (int i = list->el_amount + 1; i <= list->capacity; i++)
+	{
+		list->data[i].element = 0;
+		list->data[i].next    = i + 1;
+		list->data[i].prev    = -1;
+	}
+	list->data[list->capacity].next = 0;
+	list->head = list->data + 1;
+	list->tail = list->data + list->el_amount;
+	list->free = list->tail + 1;
+	free(tmp);
 }
 
 enum LIST_STATUS listVerify(struct List* list)

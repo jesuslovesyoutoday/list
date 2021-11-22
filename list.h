@@ -102,6 +102,8 @@ void listCompact(struct List* list);
 
 int listPhyByLog(struct List* list, int log);
 
+void listLinearize(struct List* list); 
+
 //-------------------------------------------
 //!
 //! Allocs more memory and moves the list

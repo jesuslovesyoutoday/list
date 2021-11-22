@@ -95,6 +95,15 @@ void unitTest()
 		puts("=========================");
 	}
 	
+//--------------------LINEARIZING---------------------//
+
+	listDelete(&list1, 3);
+	listInsert(&list1, 2, 45);
+	listInsert(&list1, 1, 58);
+	listDump(&list1);
+	listLinearize(&list1);
+	listDump(&list1);
+	
 //-----------------------DTORS------------------------//	
 	
 	listDtor(&list1);
